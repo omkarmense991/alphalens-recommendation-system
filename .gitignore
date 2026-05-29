@@ -1,0 +1,10 @@
+touch src/__init__.py
+
+touch src/config/__init__.py
+touch src/data/__init__.py
+touch src/features/__init__.py
+touch src/embeddings/__init__.py
+touch src/retrieval/__init__.py
+touch src/explainability/__init__.py
+touch src/evaluation/__init__.py
+touch src/api/__init__.py
