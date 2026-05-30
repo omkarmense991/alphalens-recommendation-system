@@ -17,7 +17,7 @@ class AssetSimilaritySearch:
 
         self.similarity_matrix = cosine_similarity(self.feature_matrix)
 
-    def find_similar_assets(self, symbol: str, top_k: int = 5):
+    def find_similar_assets(self, symbol: str, top_k: int = 5, min_score: float = 0.25):
         if symbol not in self.symbols:
             raise ValueError(f"Symbol {symbol} not found")
 
@@ -33,6 +33,9 @@ class AssetSimilaritySearch:
             candidate_symbol = self.symbols[index]
 
             if candidate_symbol == symbol:
+                continue
+
+            if score < min_score:
                 continue
 
             asset_info = self.assets_df[
