@@ -1,10 +1,20 @@
-touch src/__init__.py
+venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
 
-touch src/config/__init__.py
-touch src/data/__init__.py
-touch src/features/__init__.py
-touch src/embeddings/__init__.py
-touch src/retrieval/__init__.py
-touch src/explainability/__init__.py
-touch src/evaluation/__init__.py
-touch src/api/__init__.py
+.env
+.DS_Store
+
+data/raw/*.zip
+data/processed/
+
+artifacts/models/
+artifacts/embeddings/
+artifacts/metrics/
+
+mlruns/
+mlflow.db
+
+data/raw/
+data/processed/
