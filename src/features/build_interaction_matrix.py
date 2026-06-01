@@ -1,3 +1,5 @@
+# src/features/build_interaction_matrix.py
+
 import pandas as pd
 
 from src.config.settings import RAW_DATA_DIR, PROCESSED_DATA_DIR
@@ -6,14 +8,11 @@ from src.utils.logger import logger
 USER_ITEM_MATRIX_PATH = PROCESSED_DATA_DIR / "user_item_matrix.csv"
 
 
-def build_interaction_matrix():
-    events_path = RAW_DATA_DIR / "user_events.csv"
-
-    events_df = pd.read_csv(events_path)
-
-    interaction_df = events_df.groupby(["user_id", "symbol"], as_index=False).agg(
-        interaction_score=("event_weight", "sum")
-    )
+def create_interaction_matrix(events_df: pd.DataFrame):
+    interaction_df = events_df.groupby(
+        ["user_id", "symbol"],
+        as_index=False,
+    ).agg(interaction_score=("event_weight", "sum"))
 
     interaction_df["interaction_score"] = interaction_df["interaction_score"].clip(
         lower=0
@@ -25,6 +24,16 @@ def build_interaction_matrix():
         values="interaction_score",
         fill_value=0,
     )
+
+    return user_item_matrix
+
+
+def build_interaction_matrix():
+    events_path = RAW_DATA_DIR / "user_events.csv"
+
+    events_df = pd.read_csv(events_path)
+
+    user_item_matrix = create_interaction_matrix(events_df)
 
     PROCESSED_DATA_DIR.mkdir(parents=True, exist_ok=True)
 

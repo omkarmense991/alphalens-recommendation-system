@@ -9,3 +9,9 @@ PROCESSED_DATA_DIR = DATA_DIR / "processed"
 ASSETS_MASTER_PATH = PROCESSED_DATA_DIR / "assets_master.csv"
 ASSET_FEATURES_PATH = PROCESSED_DATA_DIR / "asset_features.csv"
 ASSET_EMBEDDINGS_PATH = PROCESSED_DATA_DIR / "asset_embeddings.csv"
+
+TRAIN_USER_EVENTS_PATH = PROCESSED_DATA_DIR / "train_user_events.csv"
+TEST_USER_EVENTS_PATH = PROCESSED_DATA_DIR / "test_user_events.csv"
+
+TRAIN_USER_ITEM_MATRIX_PATH = PROCESSED_DATA_DIR / "train_user_item_matrix.csv"
+TEST_USER_ITEM_MATRIX_PATH = PROCESSED_DATA_DIR / "test_user_item_matrix.csv"
