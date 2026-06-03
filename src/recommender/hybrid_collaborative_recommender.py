@@ -10,9 +10,17 @@ from src.utils.logger import logger
 
 
 class HybridCollaborativeRecommender:
-    def __init__(self):
-        self.item_cf = ItemCollaborativeFilteringRecommender()
-        self.user_cf = UserCollaborativeFilteringRecommender()
+    def __init__(self, matrix_path=None):
+        if matrix_path is None:
+            self.item_cf = ItemCollaborativeFilteringRecommender()
+            self.user_cf = UserCollaborativeFilteringRecommender()
+        else:
+            self.item_cf = ItemCollaborativeFilteringRecommender(
+                matrix_path=matrix_path
+            )
+            self.user_cf = UserCollaborativeFilteringRecommender(
+                matrix_path=matrix_path
+            )
 
     def recommend_for_user(
         self,

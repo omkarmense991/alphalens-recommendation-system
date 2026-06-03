@@ -17,7 +17,13 @@ class AssetSimilaritySearch:
 
         self.similarity_matrix = cosine_similarity(self.feature_matrix)
 
-    def find_similar_assets(self, symbol: str, top_k: int = 5, min_score: float = 0.25):
+    def find_similar_assets(
+        self,
+        symbol: str,
+        top_k: int = 5,
+        min_score: float = 0.25,
+        same_sector_only: bool = False,
+    ):
         if symbol not in self.symbols:
             raise ValueError(f"Symbol {symbol} not found")
 
@@ -28,6 +34,8 @@ class AssetSimilaritySearch:
         similarity_scores = sorted(similarity_scores, key=lambda x: x[1], reverse=True)
 
         recommendations = []
+
+        source_asset = self.assets_df[self.assets_df["symbol"] == symbol].iloc[0]
 
         for index, score in similarity_scores:
             candidate_symbol = self.symbols[index]
@@ -41,6 +49,9 @@ class AssetSimilaritySearch:
             asset_info = self.assets_df[
                 self.assets_df["symbol"] == candidate_symbol
             ].iloc[0]
+
+            if same_sector_only and asset_info["sector"] != source_asset["sector"]:
+                continue
 
             recommendations.append(
                 {

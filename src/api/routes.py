@@ -37,12 +37,14 @@ def get_similar_assets(
     symbol: str,
     top_k: int = Query(default=5, ge=1, le=20),
     min_score: float = Query(default=0.25, ge=-1.0, le=1.0),
+    same_sector_only: bool = Query(default=False),
 ):
     try:
         recommendations = content_recommender.find_similar_assets(
             symbol=symbol,
             top_k=top_k,
             min_score=min_score,
+            same_sector_only=same_sector_only,
         )
 
         return {

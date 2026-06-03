@@ -26,9 +26,9 @@ USER_ITEM_MATRIX_PATH = PROCESSED_DATA_DIR / "user_item_matrix.csv"
 
 
 class UserCollaborativeFilteringRecommender:
-    def __init__(self):
+    def __init__(self, matrix_path=USER_ITEM_MATRIX_PATH):
         self.user_item_matrix = pd.read_csv(
-            USER_ITEM_MATRIX_PATH,
+            matrix_path,
             index_col="user_id",
         )
 

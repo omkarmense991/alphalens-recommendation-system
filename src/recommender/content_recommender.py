@@ -9,9 +9,18 @@ class ContentBasedRecommender:
         self.search_engine = AssetSimilaritySearch()
         self.explainer = ContentRecommendationExplainer()
 
-    def find_similar_assets(self, symbol: str, top_k: int = 5, min_score: float = 0.25):
+    def find_similar_assets(
+        self,
+        symbol: str,
+        top_k: int = 5,
+        min_score: float = 0.25,
+        same_sector_only: bool = False,
+    ):
         recommendations = self.search_engine.find_similar_assets(
-            symbol=symbol, top_k=top_k, min_score=min_score
+            symbol=symbol,
+            top_k=top_k,
+            min_score=min_score,
+            same_sector_only=same_sector_only,
         )
 
         for recommendation in recommendations:
@@ -25,7 +34,11 @@ class ContentBasedRecommender:
 if __name__ == "__main__":
     recommender = ContentBasedRecommender()
 
-    results = recommender.find_similar_assets(symbol="RELIANCE.NS", top_k=5)
+    results = recommender.find_similar_assets(
+        symbol="RELIANCE.NS",
+        top_k=5,
+        same_sector_only=True,
+    )
 
     for item in results:
         logger.info(f"\n{item}")

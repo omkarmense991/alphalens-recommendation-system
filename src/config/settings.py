@@ -15,3 +15,6 @@ TEST_USER_EVENTS_PATH = PROCESSED_DATA_DIR / "test_user_events.csv"
 
 TRAIN_USER_ITEM_MATRIX_PATH = PROCESSED_DATA_DIR / "train_user_item_matrix.csv"
 TEST_USER_ITEM_MATRIX_PATH = PROCESSED_DATA_DIR / "test_user_item_matrix.csv"
+
+EVALUATION_RESULTS_PATH = PROCESSED_DATA_DIR / "evaluation_results.csv"
+EVALUATION_SUMMARY_PATH = PROCESSED_DATA_DIR / "evaluation_summary.csv"
