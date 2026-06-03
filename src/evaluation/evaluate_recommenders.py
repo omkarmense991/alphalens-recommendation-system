@@ -39,6 +39,11 @@ from src.evaluation.recommendation_quality import (
     sector_diversity,
 )
 
+from src.evaluation.popularity_bias import (
+    compute_item_popularity,
+    average_recommendation_popularity,
+)
+
 
 def get_recommended_symbols(recommendations: list[dict]) -> list[str]:
     return [item["symbol"] for item in recommendations]
@@ -53,6 +58,7 @@ def evaluate_model(
     recommender,
     test_matrix: pd.DataFrame,
     assets_df: pd.DataFrame,
+    item_popularity: dict[str, float],
     k: int = 5,
 ):
     user_metrics = []
@@ -105,6 +111,9 @@ def evaluate_model(
                     recommended_items,
                     assets_df,
                 ),
+                "avg_recommendation_popularity": average_recommendation_popularity(
+                    recommended_items, item_popularity
+                ),
             }
         )
 
@@ -124,7 +133,11 @@ def evaluate_recommenders(k: int = 5):
         index_col="user_id",
     )
 
+    train_matrix = pd.read_csv(TRAIN_USER_ITEM_MATRIX_PATH, index_col="user_id")
+
     assets_df = pd.read_csv(ASSETS_MASTER_PATH)
+
+    item_popularity = compute_item_popularity(train_matrix)
 
     recommenders = {
         "item_cf": ItemCollaborativeFilteringRecommender(
@@ -147,6 +160,7 @@ def evaluate_recommenders(k: int = 5):
             model_name=model_name,
             recommender=recommender,
             test_matrix=test_matrix,
+            item_popularity=item_popularity,
             assets_df=assets_df,
             k=k,
         )
@@ -164,6 +178,7 @@ def evaluate_recommenders(k: int = 5):
             ndcg_at_k=("ndcg_at_k", "mean"),
             sector_diversity_at_k=("sector_diversity_at_k", "mean"),
             catalog_coverage=("catalog_coverage", "mean"),
+            avg_recommendation_popularity=("avg_recommendation_popularity", "mean"),
         )
         .sort_values("ndcg_at_k", ascending=False)
     )
