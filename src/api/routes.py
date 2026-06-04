@@ -20,12 +20,15 @@ from src.recommender.hybrid_collaborative_recommender import (
     HybridCollaborativeRecommender,
 )
 
+from src.recommender.matrix_factorization import MatrixFactorizationRecommender
+
 router = APIRouter()
 
 content_recommender = ContentBasedRecommender()
 item_cf_recommender = ItemCollaborativeFilteringRecommender()
 user_cf_recommender = UserCollaborativeFilteringRecommender()
 hybrid_cf_recommender = HybridCollaborativeRecommender()
+mf_recommender = MatrixFactorizationRecommender()
 
 
 @router.get("/health", response_model=HealthResponse)
@@ -61,7 +64,7 @@ def get_similar_assets(
 @router.get("/recommendations/{user_id}")
 def get_user_recommendations(
     user_id: str,
-    method: str = Query(default="item", pattern="^(item|user|hybrid|ranking)$"),
+    method: str = Query(default="item", pattern="^(item|user|hybrid|ranking|mf)$"),
     top_k: int = Query(default=5, ge=1, le=20),
     item_weight: float = Query(default=0.45, ge=0.0, le=1.0),
     user_weight: float = Query(default=0.45, ge=0.0, le=1.0),
@@ -80,6 +83,11 @@ def get_user_recommendations(
             )
         elif method == "hybrid":
             recommendations = hybrid_cf_recommender.recommend_for_user(
+                user_id=user_id,
+                top_k=top_k,
+            )
+        elif method == "mf":
+            recommendations = mf_recommender.recommend_for_user(
                 user_id=user_id,
                 top_k=top_k,
             )

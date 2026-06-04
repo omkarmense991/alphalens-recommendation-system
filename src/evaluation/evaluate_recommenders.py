@@ -32,6 +32,9 @@ from src.recommender.user_collaborative_filtering import (
 from src.recommender.hybrid_collaborative_recommender import (
     HybridCollaborativeRecommender,
 )
+
+from src.recommender.matrix_factorization import MatrixFactorizationRecommender
+
 from src.utils.logger import logger
 
 from src.evaluation.recommendation_quality import (
@@ -156,6 +159,10 @@ def evaluate_recommenders(k: int = 5):
             item_cf_weight=0.45,
             user_cf_weight=0.45,
             popularity_weight=0.10,
+        ),
+        "matrix_factorization": MatrixFactorizationRecommender(
+            matrix_path=TRAIN_USER_ITEM_MATRIX_PATH,
+            n_factors=20,  # Best latent dimension discovered via offline evaluation: 20
         ),
     }
 
