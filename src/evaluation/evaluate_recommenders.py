@@ -44,6 +44,8 @@ from src.evaluation.popularity_bias import (
     average_recommendation_popularity,
 )
 
+from src.recommender.ranking_recommender import RankingRecommender
+
 
 def get_recommended_symbols(recommendations: list[dict]) -> list[str]:
     return [item["symbol"] for item in recommendations]
@@ -148,6 +150,12 @@ def evaluate_recommenders(k: int = 5):
         ),
         "hybrid_cf": HybridCollaborativeRecommender(
             matrix_path=TRAIN_USER_ITEM_MATRIX_PATH,
+        ),
+        "ranking": RankingRecommender(
+            matrix_path=TRAIN_USER_ITEM_MATRIX_PATH,
+            item_cf_weight=0.45,
+            user_cf_weight=0.45,
+            popularity_weight=0.10,
         ),
     }
 

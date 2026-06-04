@@ -99,7 +99,7 @@ class UserCollaborativeFilteringRecommender:
                     "company_name": asset_info["company_name"],
                     "sector": asset_info["sector"],
                     "industry": asset_info["industry"],
-                    "user_cf_score": round(float(score), 4),
+                    "user_cf_raw_score": round(float(score), 4),
                 }
             )
 

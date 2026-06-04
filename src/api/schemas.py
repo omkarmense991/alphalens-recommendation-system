@@ -25,7 +25,7 @@ class CollaborativeRecommendationItem(BaseModel):
     company_name: str
     sector: str
     industry: str
-    collaborative_score: float
+    item_cf_raw_score: float
 
 
 class UserRecommendationsResponse(BaseModel):

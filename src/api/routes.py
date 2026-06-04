@@ -5,8 +5,9 @@ from fastapi import APIRouter, HTTPException, Query
 from src.api.schemas import (
     HealthResponse,
     SimilarAssetsResponse,
-    UserRecommendationsResponse,
 )
+
+from src.recommender.ranking_recommender import RankingRecommender
 
 from src.recommender.content_recommender import ContentBasedRecommender
 from src.recommender.item_collaborative_filtering import (
@@ -60,8 +61,11 @@ def get_similar_assets(
 @router.get("/recommendations/{user_id}")
 def get_user_recommendations(
     user_id: str,
-    method: str = Query(default="item", pattern="^(item|user|hybrid)$"),
+    method: str = Query(default="item", pattern="^(item|user|hybrid|ranking)$"),
     top_k: int = Query(default=5, ge=1, le=20),
+    item_weight: float = Query(default=0.45, ge=0.0, le=1.0),
+    user_weight: float = Query(default=0.45, ge=0.0, le=1.0),
+    popularity_weight: float = Query(default=0.10, ge=0.0, le=1.0),
 ):
     try:
         if method == "item":
@@ -74,12 +78,31 @@ def get_user_recommendations(
                 user_id=user_id,
                 top_k=top_k,
             )
-        else:
+        elif method == "hybrid":
             recommendations = hybrid_cf_recommender.recommend_for_user(
                 user_id=user_id,
                 top_k=top_k,
             )
+        else:
+            total_weight = item_weight + user_weight + popularity_weight
 
+            if abs(total_weight - 1.0) > 1e-6:
+                raise HTTPException(
+                    status_code=400,
+                    detail="Ranking weights must sum to 1.0",
+                )
+
+            dynamic_ranking_recommender = RankingRecommender(
+                item_cf_weight=item_weight,
+                user_cf_weight=user_weight,
+                popularity_weight=popularity_weight,
+            )
+
+            recommendations = dynamic_ranking_recommender.recommend_for_user(
+                user_id=user_id,
+                top_k=top_k,
+                candidate_pool_size=20,
+            )
         return {
             "user_id": user_id,
             "method": method,

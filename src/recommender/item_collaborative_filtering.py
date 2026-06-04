@@ -93,7 +93,7 @@ class ItemCollaborativeFilteringRecommender:
                     "company_name": asset_info["company_name"],
                     "sector": asset_info["sector"],
                     "industry": asset_info["industry"],
-                    "collaborative_score": round(float(score), 4),
+                    "item_cf_raw_score": round(float(score), 4),
                 }
             )
 

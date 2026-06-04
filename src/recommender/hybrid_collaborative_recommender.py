@@ -40,11 +40,11 @@ class HybridCollaborativeRecommender:
         )
 
         item_scores = {
-            item["symbol"]: item["collaborative_score"] for item in item_recommendations
+            item["symbol"]: item["item_cf_raw_score"] for item in item_recommendations
         }
 
         user_scores = {
-            item["symbol"]: item["user_cf_score"] for item in user_recommendations
+            item["symbol"]: item["user_cf_raw_score"] for item in user_recommendations
         }
 
         normalized_item_scores = self._normalize_scores(item_scores)
