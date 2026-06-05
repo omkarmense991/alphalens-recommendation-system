@@ -1,4 +1,12 @@
+import os
 from pathlib import Path
+
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+if not DATABASE_URL:
+    raise RuntimeError(
+        "DATABASE_URL is not set. Run the app using docker-compose or set DATABASE_URL locally."
+    )
 
 BASE_DIR = Path(__file__).resolve().parents[2]
 
@@ -20,4 +28,5 @@ EVALUATION_RESULTS_PATH = PROCESSED_DATA_DIR / "evaluation_results.csv"
 EVALUATION_SUMMARY_PATH = PROCESSED_DATA_DIR / "evaluation_summary.csv"
 
 
-DATABASE_URL = "sqlite:///./alphalens.db"
+MLFLOW_TRACKING_URI = "sqlite:///mlflow.db"
+MLFLOW_EXPERIMENT_NAME = "AlphaLens Recommendation Evaluation"

@@ -49,6 +49,8 @@ from src.evaluation.popularity_bias import (
 
 from src.recommender.ranking_recommender import RankingRecommender
 
+from src.evaluation.mlflow_tracker import log_evaluation_to_mlflow
+
 
 def get_recommended_symbols(recommendations: list[dict]) -> list[str]:
     return [item["symbol"] for item in recommendations]
@@ -208,6 +210,9 @@ def evaluate_recommenders(k: int = 5):
 
     logger.info(f"Detailed evaluation results saved to {EVALUATION_RESULTS_PATH}")
     logger.info(f"Evaluation summary saved to {EVALUATION_SUMMARY_PATH}")
+
+    log_evaluation_to_mlflow(summary_df)
+    logger.info("Evaluation metrics logged to MLflow")
 
     return summary_df
 

@@ -11,3 +11,4 @@ httpx
 scipy
 sqlalchemy
 psycopg2-binary
+mlflow

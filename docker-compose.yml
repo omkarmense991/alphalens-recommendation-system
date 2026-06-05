@@ -1,15 +1,38 @@
-# docker-compose.yml
-
 services:
+  postgres:
+    image: postgres:16
+    container_name: alphalens-postgres
+
+    environment:
+      POSTGRES_DB: alphalens
+      POSTGRES_USER: alphalens_user
+      POSTGRES_PASSWORD: alphalens_password
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+    restart: unless-stopped
+
   alphalens-api:
     build: .
     container_name: alphalens-api
+
+    depends_on:
+      - postgres
+
+    environment:
+      DATABASE_URL: postgresql://alphalens_user:alphalens_password@postgres:5432/alphalens
 
     ports:
       - "8000:8000"
 
     volumes:
       - ./data:/app/data
-      - ./alphalens.db:/app/alphalens.db
 
     restart: unless-stopped
+
+volumes:
+  postgres_data:
