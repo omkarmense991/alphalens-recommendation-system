@@ -1,27 +1,54 @@
 # src/recommender/ranking_recommender.py
 
 """
-End-to-End Ranking Recommender
+Production Ranking Recommender
 
-Coordinates:
+Coordinates the complete recommendation serving pipeline:
+
 1. Candidate Generation
 2. Feature Aggregation
 3. Ranking
+
+Candidate sources:
+
+- Item-Based Collaborative Filtering
+- User-Based Collaborative Filtering
+- Embedding Retrieval
+- Matrix Factorization
+- Popularity Signals
 
 Workflow:
 
 User
  ↓
 Candidate Generator
+    ├─ Item CF Candidates
+    ├─ User CF Candidates
+    ├─ Embedding Candidates
+    ├─ Matrix Factorization Candidates
+    └─ Popularity Features
  ↓
-Candidate Assets
+Feature Aggregation
  ↓
 Weighted Ranker
  ↓
 Top-K Recommendations
 
-This module represents the complete recommendation pipeline
-used for personalized recommendation serving.
+Ranking Score:
+
+ranking_score =
+    item_cf_weight      × item_cf_score
+  + user_cf_weight      × user_cf_score
+  + embedding_weight    × embedding_score
+  + mf_weight           × mf_score
+  + popularity_weight   × popularity_score
+
+This module represents the final recommendation layer used
+for personalized recommendation serving.
+
+The architecture follows a production-style
+Retrieval → Ranking paradigm, where multiple candidate
+sources are combined and ranked using weighted feature fusion.
 """
 
 from src.candidates.candidate_generator import CandidateGenerator
@@ -33,9 +60,10 @@ class RankingRecommender:
     def __init__(
         self,
         matrix_path=None,
-        item_cf_weight: float = 0.35,
-        user_cf_weight: float = 0.35,
+        item_cf_weight: float = 0.25,
+        user_cf_weight: float = 0.25,
         embedding_weight: float = 0.20,
+        mf_weight: float = 0.20,
         popularity_weight: float = 0.10,
     ):
         self.candidate_generator = CandidateGenerator(matrix_path=matrix_path)
@@ -43,6 +71,8 @@ class RankingRecommender:
         self.ranker = WeightedRanker(
             item_cf_weight=item_cf_weight,
             user_cf_weight=user_cf_weight,
+            embedding_weight=embedding_weight,
+            mf_weight=mf_weight,
             popularity_weight=popularity_weight,
         )
 
@@ -65,9 +95,10 @@ class RankingRecommender:
 
 if __name__ == "__main__":
     recommender = RankingRecommender(
-        item_cf_weight=0.35,
-        user_cf_weight=0.35,
+        item_cf_weight=0.25,
+        user_cf_weight=0.25,
         embedding_weight=0.20,
+        mf_weight=0.20,
         popularity_weight=0.10,
     )
 

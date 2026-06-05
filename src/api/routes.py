@@ -72,9 +72,10 @@ def get_user_recommendations(
     user_id: str,
     method: str = Query(default="item", pattern="^(item|user|hybrid|ranking|mf)$"),
     top_k: int = Query(default=5, ge=1, le=20),
-    item_weight: float = Query(default=0.35, ge=0.0, le=1.0),
-    user_weight: float = Query(default=0.35, ge=0.0, le=1.0),
+    item_weight: float = Query(default=0.25, ge=0.0, le=1.0),
+    user_weight: float = Query(default=0.25, ge=0.0, le=1.0),
     embedding_weight: float = Query(default=0.20, ge=0.0, le=1.0),
+    mf_weight: float = Query(default=0.20, ge=0.0, le=1.0),
     popularity_weight: float = Query(default=0.10, ge=0.0, le=1.0),
 ):
     try:
@@ -100,7 +101,11 @@ def get_user_recommendations(
             )
         else:
             total_weight = (
-                item_weight + user_weight + embedding_weight + popularity_weight
+                item_weight
+                + user_weight
+                + embedding_weight
+                + mf_weight
+                + popularity_weight
             )
 
             if abs(total_weight - 1.0) > 1e-6:
@@ -113,6 +118,7 @@ def get_user_recommendations(
                 item_cf_weight=item_weight,
                 user_cf_weight=user_weight,
                 embedding_weight=embedding_weight,
+                mf_weight=mf_weight,
                 popularity_weight=popularity_weight,
             )
 
