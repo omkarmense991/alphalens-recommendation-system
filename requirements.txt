@@ -9,3 +9,5 @@ python-dotenv
 pytest
 httpx
 scipy
+sqlalchemy
+psycopg2-binary

@@ -5,7 +5,11 @@ from fastapi import APIRouter, HTTPException, Query
 from src.api.schemas import (
     HealthResponse,
     SimilarAssetsResponse,
+    UserEventRequest,
+    UserEventResponse,
 )
+
+from src.database.user_event_repository import save_user_event
 
 from src.recommender.ranking_recommender import RankingRecommender
 
@@ -23,6 +27,8 @@ from src.recommender.hybrid_collaborative_recommender import (
 from src.recommender.matrix_factorization import MatrixFactorizationRecommender
 
 from src.retrieval.embedding_retriever import EmbeddingRetriever
+
+from src.database.recommendation_logger import log_recommendations
 
 router = APIRouter()
 
@@ -127,6 +133,12 @@ def get_user_recommendations(
                 top_k=top_k,
                 candidate_pool_size=20,
             )
+
+        log_recommendations(
+            user_id=user_id,
+            method=method,
+            recommendations=recommendations,
+        )
         return {
             "user_id": user_id,
             "method": method,
@@ -180,3 +192,36 @@ def get_embedding_user_recommendations(
 
     except ValueError as error:
         raise HTTPException(status_code=404, detail=str(error))
+
+
+@router.post("/user-events", response_model=UserEventResponse)
+def create_user_event(event: UserEventRequest):
+    allowed_events = {
+        "view",
+        "search",
+        "watchlist_add",
+        "recommendation_click",
+        "buy",
+        "sell",
+    }
+
+    if event.event_type not in allowed_events:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Invalid event_type. Allowed values: {sorted(allowed_events)}",
+        )
+
+    save_user_event(
+        user_id=event.user_id,
+        symbol=event.symbol,
+        event_type=event.event_type,
+        event_weight=event.event_weight,
+        event_time=event.event_time,
+    )
+
+    return {
+        "status": "saved",
+        "user_id": event.user_id,
+        "symbol": event.symbol,
+        "event_type": event.event_type,
+    }

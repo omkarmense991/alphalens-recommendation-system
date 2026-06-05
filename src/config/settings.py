@@ -18,3 +18,6 @@ TEST_USER_ITEM_MATRIX_PATH = PROCESSED_DATA_DIR / "test_user_item_matrix.csv"
 
 EVALUATION_RESULTS_PATH = PROCESSED_DATA_DIR / "evaluation_results.csv"
 EVALUATION_SUMMARY_PATH = PROCESSED_DATA_DIR / "evaluation_summary.csv"
+
+
+DATABASE_URL = "sqlite:///./alphalens.db"
