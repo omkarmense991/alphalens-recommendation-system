@@ -1,12 +1,10 @@
 import os
 from pathlib import Path
 
-DATABASE_URL = os.getenv("DATABASE_URL")
-
-if not DATABASE_URL:
-    raise RuntimeError(
-        "DATABASE_URL is not set. Run the app using docker-compose or set DATABASE_URL locally."
-    )
+DATABASE_URL = os.getenv(
+    "DATABASE_URL",
+    "postgresql://alphalens_user:alphalens_password@localhost:5432/alphalens",
+)
 
 BASE_DIR = Path(__file__).resolve().parents[2]
 

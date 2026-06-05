@@ -17,7 +17,7 @@ def fetch_asset_features(symbol: str) -> dict:
     returns_1y = None
 
     if not hist.empty:
-        daily_returns = hist["Close"].pct_change().dropna()
+        daily_returns = hist["Close"].pct_change(fill_method=None).dropna()
         volatility = daily_returns.std() * (252**0.5)
         returns_1y = (hist["Close"].iloc[-1] / hist["Close"].iloc[0]) - 1
 

@@ -22,7 +22,7 @@ Used by:
 - Future embedding generation
 """
 
-from src.data.create_asset_universe import create_nifty50_universe
+from src.data.create_asset_universe import create_asset_universe
 from src.data.build_assets_master import build_assets_master
 from src.features.build_asset_features import build_asset_features
 from src.utils.logger import logger
@@ -32,7 +32,7 @@ def run_feature_pipeline():
     logger.info("Starting feature pipeline")
 
     # Build the universe of assets available for recommendation.
-    create_nifty50_universe()
+    create_asset_universe()
 
     # Fetch market data and fundamental metrics
     # such as PE ratio, volatility, beta, volume, etc.
