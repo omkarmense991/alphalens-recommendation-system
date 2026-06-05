@@ -22,6 +22,8 @@ from src.recommender.hybrid_collaborative_recommender import (
 
 from src.recommender.matrix_factorization import MatrixFactorizationRecommender
 
+from src.retrieval.embedding_retriever import EmbeddingRetriever
+
 router = APIRouter()
 
 content_recommender = ContentBasedRecommender()
@@ -29,6 +31,10 @@ item_cf_recommender = ItemCollaborativeFilteringRecommender()
 user_cf_recommender = UserCollaborativeFilteringRecommender()
 hybrid_cf_recommender = HybridCollaborativeRecommender()
 mf_recommender = MatrixFactorizationRecommender()
+embedding_retriever = EmbeddingRetriever(
+    n_factors=20,
+    n_neighbors=30,
+)
 
 
 @router.get("/health", response_model=HealthResponse)
@@ -66,8 +72,9 @@ def get_user_recommendations(
     user_id: str,
     method: str = Query(default="item", pattern="^(item|user|hybrid|ranking|mf)$"),
     top_k: int = Query(default=5, ge=1, le=20),
-    item_weight: float = Query(default=0.45, ge=0.0, le=1.0),
-    user_weight: float = Query(default=0.45, ge=0.0, le=1.0),
+    item_weight: float = Query(default=0.35, ge=0.0, le=1.0),
+    user_weight: float = Query(default=0.35, ge=0.0, le=1.0),
+    embedding_weight: float = Query(default=0.20, ge=0.0, le=1.0),
     popularity_weight: float = Query(default=0.10, ge=0.0, le=1.0),
 ):
     try:
@@ -92,7 +99,9 @@ def get_user_recommendations(
                 top_k=top_k,
             )
         else:
-            total_weight = item_weight + user_weight + popularity_weight
+            total_weight = (
+                item_weight + user_weight + embedding_weight + popularity_weight
+            )
 
             if abs(total_weight - 1.0) > 1e-6:
                 raise HTTPException(
@@ -103,6 +112,7 @@ def get_user_recommendations(
             dynamic_ranking_recommender = RankingRecommender(
                 item_cf_weight=item_weight,
                 user_cf_weight=user_weight,
+                embedding_weight=embedding_weight,
                 popularity_weight=popularity_weight,
             )
 
@@ -116,6 +126,50 @@ def get_user_recommendations(
             "method": method,
             "count": len(recommendations),
             "recommendations": recommendations,
+        }
+
+    except ValueError as error:
+        raise HTTPException(status_code=404, detail=str(error))
+
+
+@router.get("/embedding/similar-assets/{symbol}")
+def get_embedding_similar_assets(
+    symbol: str,
+    top_k: int = Query(default=5, ge=1, le=20),
+):
+    try:
+        results = embedding_retriever.retrieve_similar_assets(
+            symbol=symbol,
+            top_k=top_k,
+        )
+
+        return {
+            "source_symbol": symbol,
+            "method": "embedding_retrieval",
+            "count": len(results),
+            "recommendations": results,
+        }
+
+    except ValueError as error:
+        raise HTTPException(status_code=404, detail=str(error))
+
+
+@router.get("/embedding/recommendations/{user_id}")
+def get_embedding_user_recommendations(
+    user_id: str,
+    top_k: int = Query(default=5, ge=1, le=20),
+):
+    try:
+        results = embedding_retriever.retrieve_for_user(
+            user_id=user_id,
+            top_k=top_k,
+        )
+
+        return {
+            "user_id": user_id,
+            "method": "embedding_retrieval",
+            "count": len(results),
+            "recommendations": results,
         }
 
     except ValueError as error:

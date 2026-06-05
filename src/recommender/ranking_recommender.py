@@ -1,4 +1,29 @@
 # src/recommender/ranking_recommender.py
+
+"""
+End-to-End Ranking Recommender
+
+Coordinates:
+1. Candidate Generation
+2. Feature Aggregation
+3. Ranking
+
+Workflow:
+
+User
+ ↓
+Candidate Generator
+ ↓
+Candidate Assets
+ ↓
+Weighted Ranker
+ ↓
+Top-K Recommendations
+
+This module represents the complete recommendation pipeline
+used for personalized recommendation serving.
+"""
+
 from src.candidates.candidate_generator import CandidateGenerator
 from src.ranking.learning_to_rank import WeightedRanker
 from src.utils.logger import logger
@@ -8,8 +33,9 @@ class RankingRecommender:
     def __init__(
         self,
         matrix_path=None,
-        item_cf_weight: float = 0.45,
-        user_cf_weight: float = 0.45,
+        item_cf_weight: float = 0.35,
+        user_cf_weight: float = 0.35,
+        embedding_weight: float = 0.20,
         popularity_weight: float = 0.10,
     ):
         self.candidate_generator = CandidateGenerator(matrix_path=matrix_path)
@@ -39,8 +65,9 @@ class RankingRecommender:
 
 if __name__ == "__main__":
     recommender = RankingRecommender(
-        item_cf_weight=0.45,
-        user_cf_weight=0.45,
+        item_cf_weight=0.35,
+        user_cf_weight=0.35,
+        embedding_weight=0.20,
         popularity_weight=0.10,
     )
 

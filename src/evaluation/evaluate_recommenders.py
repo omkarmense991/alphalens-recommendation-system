@@ -156,8 +156,9 @@ def evaluate_recommenders(k: int = 5):
         ),
         "ranking": RankingRecommender(
             matrix_path=TRAIN_USER_ITEM_MATRIX_PATH,
-            item_cf_weight=0.45,
-            user_cf_weight=0.45,
+            item_cf_weight=0.35,
+            user_cf_weight=0.35,
+            embedding_weight=0.20,
             popularity_weight=0.10,
         ),
         "matrix_factorization": MatrixFactorizationRecommender(
