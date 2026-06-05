@@ -1,0 +1,15 @@
+# docker-compose.yml
+
+services:
+  alphalens-api:
+    build: .
+    container_name: alphalens-api
+
+    ports:
+      - "8000:8000"
+
+    volumes:
+      - ./data:/app/data
+      - ./alphalens.db:/app/alphalens.db
+
+    restart: unless-stopped
