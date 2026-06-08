@@ -12,3 +12,4 @@ scipy
 sqlalchemy
 psycopg2-binary
 mlflow
+faiss-cpu

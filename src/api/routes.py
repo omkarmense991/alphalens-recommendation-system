@@ -30,6 +30,8 @@ from src.retrieval.embedding_retriever import EmbeddingRetriever
 
 from src.database.recommendation_logger import log_recommendations
 
+from src.retrieval.faiss_embedding_retriever import FaissEmbeddingRetriever
+
 router = APIRouter()
 
 content_recommender = ContentBasedRecommender()
@@ -40,6 +42,9 @@ mf_recommender = MatrixFactorizationRecommender()
 embedding_retriever = EmbeddingRetriever(
     n_factors=20,
     n_neighbors=30,
+)
+faiss_retriever = FaissEmbeddingRetriever(
+    n_factors=20,
 )
 
 
@@ -225,3 +230,47 @@ def create_user_event(event: UserEventRequest):
         "symbol": event.symbol,
         "event_type": event.event_type,
     }
+
+
+@router.get("/faiss/similar-assets/{symbol}")
+def get_faiss_similar_assets(
+    symbol: str,
+    top_k: int = Query(default=5, ge=1, le=20),
+):
+    try:
+        results = faiss_retriever.retrieve_similar_assets(
+            symbol=symbol,
+            top_k=top_k,
+        )
+
+        return {
+            "source_symbol": symbol,
+            "method": "faiss_embedding_retrieval",
+            "count": len(results),
+            "recommendations": results,
+        }
+
+    except ValueError as error:
+        raise HTTPException(status_code=404, detail=str(error))
+
+
+@router.get("/faiss/recommendations/{user_id}")
+def get_faiss_user_recommendations(
+    user_id: str,
+    top_k: int = Query(default=5, ge=1, le=20),
+):
+    try:
+        results = faiss_retriever.retrieve_for_user(
+            user_id=user_id,
+            top_k=top_k,
+        )
+
+        return {
+            "user_id": user_id,
+            "method": "faiss_embedding_retrieval",
+            "count": len(results),
+            "recommendations": results,
+        }
+
+    except ValueError as error:
+        raise HTTPException(status_code=404, detail=str(error))
