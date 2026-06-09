@@ -1,87 +1,308 @@
 # AlphaLens Recommendation System
 
-Production-grade personalized investment recommendation system featuring retrieval, ranking, embeddings, and ML-powered asset recommendations.
+Production-grade investment recommendation system featuring retrieval, ranking, embeddings, vector search, neural retrieval, experiment tracking, and API serving.
 
-AlphaLens is not a stock price prediction system. It is a personalized asset discovery platform that recommends relevant stocks based on asset similarity, user behavior, collaborative filtering, and hybrid recommendation strategies.
+AlphaLens is not a stock price prediction system.
 
-## Current Features
+Its objective is to help users discover relevant investment opportunities using asset similarity, collaborative filtering, latent embeddings, vector retrieval, and learning-to-rank techniques.
 
-* Content-based asset similarity
-* Weighted asset feature vectors
-* Similar asset retrieval using cosine similarity
-* Same-sector recommendation filtering
-* Explainable recommendations
-* Simulated user interaction events
-* User-item interaction matrix
-* Item-based collaborative filtering
-* User-based collaborative filtering
-* Hybrid collaborative recommender
-* FastAPI recommendation endpoints
-* Offline evaluation pipeline
-* Precision@K, Recall@K, Hit Rate@K, NDCG@K
-* Catalog coverage, sector diversity, and popularity bias metrics
-* Reproducible end-to-end ML pipeline
+---
 
-## Recommendation Methods
+# Overview
+
+AlphaLens was built to simulate how modern recommendation systems are designed and deployed in production environments.
+
+The project implements multiple retrieval strategies, compares them using offline evaluation metrics, tracks experiments with MLflow, persists recommendation data in PostgreSQL, and exposes recommendations through FastAPI.
+
+The system demonstrates the evolution of recommender systems from traditional similarity-based methods to latent factor models and neural retrieval architectures.
+
+---
+
+# System Architecture
+
+```text
+                    Asset Universe
+                           |
+                           v
+                  Market Data Pipeline
+                           |
+                           v
+                 Asset Feature Engineering
+                           |
+                           v
+                 Asset Feature Store
+                           |
+        +------------------+------------------+
+        |                                     |
+        v                                     v
+
+ Content-Based Retrieval           Similar Asset Search
+```
+
+```text
+                 User Interaction Events
+     (view, search, watchlist, click, buy, sell)
+                           |
+                           v
+                  User-Item Matrix
+                           |
+        +---------+--------+---------+---------+
+        |          |                  |        |
+        v          v                  v        v
+
+     Item CF    User CF    Matrix Factorization
+                                       |
+                                       v
+                              Latent Embeddings
+                                       |
+                      +----------------+----------------+
+                      |                                 |
+                      v                                 v
+
+            Embedding Retrieval              FAISS Retrieval
+                      |                                 |
+                      +---------------+-----------------+
+                                      |
+                                      v
+
+                           Candidate Generation
+                                      |
+                                      v
+
+                            Learning-to-Rank
+                                      |
+                                      v
+
+                          Final Recommendations
+```
+
+---
+
+# Key Features
 
 ### Content-Based Recommendation
 
-Represents each asset using metadata and market features such as:
-
-* sector
-* industry
-* market capitalization
-* PE ratio
-* PB ratio
-* dividend yield
-* volatility
-* returns
-* trading volume
-
-Similar assets are retrieved using cosine similarity over weighted feature vectors.
+* Asset similarity search
+* Weighted feature vectors
+* Explainable recommendations
+* Same-sector filtering
+* Cosine similarity retrieval
 
 ### Collaborative Filtering
 
-User behavior is simulated using events such as:
+* Item-based collaborative filtering
+* User-based collaborative filtering
+* Hybrid collaborative filtering
 
-* view
-* search
-* watchlist add
-* recommendation click
-* buy
-* sell
+### Matrix Factorization
 
-These events are converted into a user-item interaction matrix.
+* Latent factor recommendation model
+* User embeddings
+* Asset embeddings
+* Personalized recommendations
 
-Implemented collaborative filtering methods:
+### Embedding Retrieval
 
-* item-based collaborative filtering
-* user-based collaborative filtering
-* hybrid collaborative filtering
+* Embedding-based candidate generation
+* User-to-item retrieval
+* Asset-to-asset retrieval
 
-### Hybrid Recommendation
+### FAISS Vector Search
 
-The hybrid recommender combines normalized item-CF and user-CF scores to create a balanced recommendation ranking.
+* Approximate nearest neighbor retrieval
+* Vector similarity search
+* Scalable embedding retrieval
 
-## Project Pipeline
+### Neural Retrieval
 
-Run the full pipeline:
+* Two-Tower neural recommendation model
+* User embedding tower
+* Asset embedding tower
+* Dot-product retrieval
+
+### Learning-to-Rank
+
+Combines multiple recommendation signals:
+
+* Item CF
+* User CF
+* Matrix Factorization
+* Embedding Retrieval
+* Popularity Signals
+
+Produces final ranked recommendations.
+
+### Experiment Tracking
+
+* MLflow experiment tracking
+* Offline evaluation tracking
+* Model comparison
+* Metric logging
+* Artifact storage
+
+### Persistence Layer
+
+* PostgreSQL database
+* Asset storage
+* User event storage
+* Recommendation logging
+
+### API Serving
+
+* FastAPI
+* REST endpoints
+* Recommendation serving
+* User event ingestion
+
+### Containerization
+
+* Docker
+* Docker Compose
+* PostgreSQL container
+* API container
+
+---
+
+# Recommendation Methods
+
+## 1. Content-Based Recommendation
+
+Assets are represented using:
+
+* Sector
+* Industry
+* Market Capitalization
+* PE Ratio
+* PB Ratio
+* Dividend Yield
+* Volatility
+* Historical Returns
+* Trading Volume
+
+Recommendations are generated using cosine similarity over engineered feature vectors.
+
+---
+
+## 2. Item-Based Collaborative Filtering
+
+Learns asset-to-asset similarity from user behavior.
+
+If users frequently interact with the same assets, those assets become similar.
+
+Example:
+
+```text
+Users who interacted with RELIANCE
+also interacted with ONGC
+```
+
+---
+
+## 3. User-Based Collaborative Filtering
+
+Learns user-to-user similarity.
+
+If two users behave similarly, assets preferred by one user can be recommended to the other.
+
+---
+
+## 4. Hybrid Collaborative Filtering
+
+Combines:
+
+```text
+Item CF Score
++
+User CF Score
+```
+
+to create a balanced recommendation strategy.
+
+---
+
+## 5. Matrix Factorization
+
+Factorizes the user-item interaction matrix into:
+
+```text
+User Latent Factors
+Item Latent Factors
+```
+
+This captures hidden behavioral patterns and generates personalized recommendations.
+
+---
+
+## 6. Embedding Retrieval
+
+Uses latent asset and user embeddings generated by matrix factorization.
+
+Supports:
+
+* Similar asset retrieval
+* User recommendation retrieval
+
+---
+
+## 7. FAISS Retrieval
+
+Uses Facebook AI Similarity Search (FAISS) for efficient nearest-neighbor retrieval over embedding vectors.
+
+Supports scalable vector search.
+
+---
+
+## 8. Two-Tower Neural Retrieval
+
+A neural recommendation architecture consisting of:
+
+```text
+User Tower
+Asset Tower
+```
+
+Both towers learn embeddings in a shared latent space.
+
+Recommendations are generated using embedding similarity.
+
+---
+
+## 9. Learning-to-Rank
+
+Final ranking model combines:
+
+```text
+Item CF
+User CF
+Embedding Retrieval
+Matrix Factorization
+Popularity Signals
+```
+
+into a unified recommendation score.
+
+---
+
+# Data Pipeline
+
+Run complete pipeline:
 
 ```bash
 python -m src.pipelines.run_full_pipeline
 ```
 
-This executes:
+Pipeline stages:
 
 ```text
-asset universe creation
-→ market data extraction
-→ asset feature engineering
-→ user event simulation
-→ interaction matrix creation
-→ train/test split
-→ recommender evaluation
-→ metric artifact generation
+Asset Universe
+→ Market Data Collection
+→ Feature Engineering
+→ User Event Simulation
+→ User-Item Matrix Construction
+→ Train/Test Split
+→ Recommender Training
+→ Offline Evaluation
+→ MLflow Tracking
 ```
 
 Individual pipelines:
@@ -92,7 +313,9 @@ python -m src.pipelines.run_collaborative_pipeline
 python -m src.pipelines.run_evaluation_pipeline
 ```
 
-## API Endpoints
+---
+
+# API Endpoints
 
 Start API:
 
@@ -100,13 +323,23 @@ Start API:
 uvicorn src.api.main:app --reload
 ```
 
-Health check:
+---
+
+## Health Check
 
 ```http
 GET /health
 ```
 
-Similar assets:
+Example:
+
+```bash
+curl "http://127.0.0.1:8000/health"
+```
+
+---
+
+## Similar Assets
 
 ```http
 GET /similar-assets/{symbol}
@@ -115,116 +348,257 @@ GET /similar-assets/{symbol}
 Example:
 
 ```bash
-curl "http://127.0.0.1:8000/similar-assets/RELIANCE.NS?top_k=5&same_sector_only=true"
+curl "http://127.0.0.1:8000/similar-assets/RELIANCE.NS"
 ```
 
-Personalized recommendations:
+---
+
+## Personalized Recommendations
 
 ```http
 GET /recommendations/{user_id}
 ```
 
+Methods:
+
+```text
+item
+user
+hybrid
+ranking
+mf
+two_tower
+```
+
 Examples:
 
 ```bash
-curl "http://127.0.0.1:8000/recommendations/user_1?method=item&top_k=5"
-curl "http://127.0.0.1:8000/recommendations/user_1?method=user&top_k=5"
-curl "http://127.0.0.1:8000/recommendations/user_1?method=hybrid&top_k=5"
+curl "http://127.0.0.1:8000/recommendations/user_1?method=item"
+curl "http://127.0.0.1:8000/recommendations/user_1?method=user"
+curl "http://127.0.0.1:8000/recommendations/user_1?method=hybrid"
+curl "http://127.0.0.1:8000/recommendations/user_1?method=ranking"
+curl "http://127.0.0.1:8000/recommendations/user_1?method=mf"
+curl "http://127.0.0.1:8000/recommendations/user_1?method=two_tower"
 ```
 
-## Evaluation
+---
 
-AlphaLens uses a temporal offline evaluation strategy.
+## Embedding Retrieval
 
-Past user interactions are used for training, and future interactions are used as test data.
+```http
+GET /embedding/similar-assets/{symbol}
+GET /embedding/recommendations/{user_id}
+```
 
-Evaluation metrics:
+---
+
+## FAISS Retrieval
+
+```http
+GET /faiss/similar-assets/{symbol}
+GET /faiss/recommendations/{user_id}
+```
+
+---
+
+## User Event Ingestion
+
+```http
+POST /user-events
+```
+
+Example:
+
+```bash
+curl -X POST "http://127.0.0.1:8000/user-events" \
+-H "Content-Type: application/json" \
+-d '{
+  "user_id": "user_1",
+  "symbol": "RELIANCE.NS",
+  "event_type": "watchlist_add",
+  "event_weight": 4
+}'
+```
+
+---
+
+# Offline Evaluation
+
+AlphaLens uses temporal offline evaluation.
+
+```text
+Past interactions
+→ Training
+
+Future interactions
+→ Evaluation
+```
+
+Metrics:
 
 * Precision@K
 * Recall@K
 * Hit Rate@K
 * NDCG@K
-* Sector Diversity@K
 * Catalog Coverage
-* Average Recommendation Popularity
+* Sector Diversity
+* Popularity Bias
 
-Generated artifacts:
-
-```text
-data/processed/evaluation_results.csv
-data/processed/evaluation_summary.csv
-```
-
-## Current Architecture
+Artifacts:
 
 ```text
-Raw Asset Universe
-        ↓
-Market Data Fetching
-        ↓
-Asset Master Dataset
-        ↓
-Feature Engineering
-        ↓
-Content-Based Retrieval
-        ↓
-Similar Asset API
+evaluation_results.csv
+evaluation_summary.csv
 ```
+
+---
+
+# Evaluation Results
+
+Best observed evaluation results:
+
+| Model                | NDCG@5 |
+| -------------------- | ------ |
+| Matrix Factorization | 0.0836 |
+| Learning-to-Rank     | 0.0727 |
+| Hybrid CF            | 0.0659 |
+| Item CF              | 0.0610 |
+| User CF              | 0.0567 |
+| Two-Tower Retrieval  | 0.0425 |
+
+Matrix Factorization achieved the strongest ranking quality on the current dataset.
+
+The Two-Tower model serves as an experimental neural retrieval baseline and can be improved using richer user and asset features.
+
+---
+
+# MLflow Experiment Tracking
+
+Experiment Name:
 
 ```text
-User Events
-        ↓
-Interaction Matrix
-        ↓
-Item CF / User CF
-        ↓
-Hybrid CF
-        ↓
-Recommendation API
-        ↓
-Offline Evaluation
+AlphaLens Recommendation Evaluation
 ```
 
-## Tech Stack
+Tracks:
 
-* Python
-* Pandas
-* Scikit-learn
-* FastAPI
-* Pydantic
-* yfinance
-* pytest
+* Evaluation metrics
+* Model comparisons
+* Offline experiments
+* Artifacts
 
-## Future Roadmap
+Launch UI:
 
-* Replace hardcoded asset universe with NSE/NIFTY data source
-* Add PostgreSQL persistence
-* Add recommendation logging
-* Add watchlist APIs
-* Add candidate generation and ranking layer
-* Add content + collaborative hybrid ranking
-* Add MLflow experiment tracking
-* Add model/recommender registry
-* Add matrix factorization
-* Add neural collaborative filtering
-* Add two-tower retrieval model
-* Add Docker deployment
-* Add monitoring dashboard
+```bash
+mlflow ui
+```
 
-## Project Highlights
+---
 
-AlphaLens is a production-style recommendation system for personalized investment discovery.
+# Database Layer
 
-The project demonstrates:
+Database:
 
-* recommendation system fundamentals
-* retrieval and ranking architecture
-* collaborative filtering
-* hybrid recommendation
-* feature engineering
-* offline evaluation
-* recommendation quality monitoring
-* API serving
-* reproducible ML pipelines
+```text
+PostgreSQL
+```
 
-The goal is not to predict stock prices, but to recommend relevant assets based on user preferences, behavior patterns, and asset similarity.
+Stores:
+
+* Assets
+* User Events
+* Recommendation Logs
+
+Initialize database:
+
+```bash
+python -m src.database.init_db
+```
+
+Load assets:
+
+```bash
+python -m src.database.load_assets
+```
+
+---
+
+# Docker Deployment
+
+Build and run:
+
+```bash
+docker compose up --build -d
+```
+
+Check services:
+
+```bash
+docker compose ps
+```
+
+Stop:
+
+```bash
+docker compose down
+```
+
+---
+
+# Repository Structure
+
+```text
+src/
+├── api/
+├── candidates/
+├── database/
+├── deep_learning/
+├── evaluation/
+├── feature_engineering/
+├── pipelines/
+├── ranking/
+├── recommender/
+├── retrieval/
+├── simulation/
+└── utils/
+```
+
+---
+
+# Project Highlights
+
+This project demonstrates:
+
+* Content-Based Recommendation
+* Collaborative Filtering
+* Matrix Factorization
+* Embedding Retrieval
+* FAISS Vector Search
+* Neural Retrieval (Two-Tower)
+* Learning-to-Rank
+* Offline Evaluation
+* MLflow Experiment Tracking
+* PostgreSQL Persistence
+* FastAPI Serving
+* Docker Deployment
+
+The architecture mirrors production recommendation systems used by modern technology companies, adapted to the stock recommendation domain.
+
+---
+
+# Future Work
+
+* Real user interaction ingestion
+* Online A/B testing
+* Feature-rich Two-Tower architecture
+* Automated retraining pipelines
+* Recommendation monitoring dashboards
+* Model registry and deployment workflows
+
+---
+
+# Project Goal
+
+The goal of AlphaLens is not to predict stock prices.
+
+The objective is to build a production-style recommendation platform capable of helping users discover relevant investment opportunities through retrieval, ranking, embeddings, and recommendation system engineering.
