@@ -31,6 +31,7 @@ from src.retrieval.embedding_retriever import EmbeddingRetriever
 from src.database.recommendation_logger import log_recommendations
 
 from src.retrieval.faiss_embedding_retriever import FaissEmbeddingRetriever
+from src.deep_learning.two_tower_recommender import TwoTowerRecommender
 
 router = APIRouter()
 
@@ -46,6 +47,7 @@ embedding_retriever = EmbeddingRetriever(
 faiss_retriever = FaissEmbeddingRetriever(
     n_factors=20,
 )
+two_tower_recommender = TwoTowerRecommender()
 
 
 @router.get("/health", response_model=HealthResponse)
@@ -81,7 +83,10 @@ def get_similar_assets(
 @router.get("/recommendations/{user_id}")
 def get_user_recommendations(
     user_id: str,
-    method: str = Query(default="item", pattern="^(item|user|hybrid|ranking|mf)$"),
+    method: str = Query(
+        default="item",
+        pattern="^(item|user|hybrid|ranking|mf|two_tower)$",
+    ),
     top_k: int = Query(default=5, ge=1, le=20),
     item_weight: float = Query(default=0.25, ge=0.0, le=1.0),
     user_weight: float = Query(default=0.25, ge=0.0, le=1.0),
@@ -107,6 +112,11 @@ def get_user_recommendations(
             )
         elif method == "mf":
             recommendations = mf_recommender.recommend_for_user(
+                user_id=user_id,
+                top_k=top_k,
+            )
+        elif method == "two_tower":
+            recommendations = two_tower_recommender.recommend_for_user(
                 user_id=user_id,
                 top_k=top_k,
             )

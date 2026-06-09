@@ -51,6 +51,8 @@ from src.recommender.ranking_recommender import RankingRecommender
 
 from src.evaluation.mlflow_tracker import log_evaluation_to_mlflow
 
+from src.deep_learning.two_tower_recommender import TwoTowerRecommender
+
 
 def get_recommended_symbols(recommendations: list[dict]) -> list[str]:
     return [item["symbol"] for item in recommendations]
@@ -167,6 +169,9 @@ def evaluate_recommenders(k: int = 5):
         "matrix_factorization": MatrixFactorizationRecommender(
             matrix_path=TRAIN_USER_ITEM_MATRIX_PATH,
             n_factors=20,  # Best latent dimension discovered via offline evaluation: 20
+        ),
+        "two_tower": TwoTowerRecommender(
+            matrix_path=TRAIN_USER_ITEM_MATRIX_PATH,
         ),
     }
 
